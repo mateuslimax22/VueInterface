@@ -86,21 +86,20 @@
                             <div class="col-lg-6 mb-4">
                             <h6 class="heading-small text-muted mb-4">Pressão Arterial Média</h6>
 
-                                 <GChart
-                                    type="AreaChart"
-                                    :data="chartPre"
-                                    :options="chartOptions3"  
-                                    />  
+                                 <GChart          
+                                    type="AreaChart"            
+                                    @ready="onChartReady4"
+                                    />
                                            
                             </div>
                         
                             <div class="col-lg-6 mb-4">
                                 <h6 class="heading-small text-muted mb-4">Pressão Arterial Sistólica</h6>
 
-                                 <GChart
-                                    type="AreaChart"
-                                    :data="chartPre2"
-                                    :options="chartOptions2"/> 
+                                 <GChart          
+                                    type="AreaChart"            
+                                    @ready="onChartReady3"
+                                    />
                                            
                             </div>
                             
@@ -158,6 +157,8 @@ export default {
     data: () => ({
         resultado:[],
         ecg:[],
+        pressys:[],
+        pressmain:[],
         id: null,
         temp: [],
         searchQuery: null,
@@ -233,12 +234,12 @@ export default {
             this.qtd_props += 1
             let prop = "prop_" + this.qtd_props
             let valor = "Propriedade " + this.qtd_props
-            // Cria um cópia de `propriedades`
+           
             let novo_propriedades = {...this.propriedades}
-            // Modifica a cópia
+            
             novo_propriedades[prop] = valor
             
-            // Substitui o objeto reativo inteiro pela cópia modificada
+           
             this.propriedades = novo_propriedades
             if(this.qtd_props > 2){
                 this.id = this.searchQuery
@@ -260,14 +261,14 @@ export default {
 
             var gglData = [];
             if (jsonData.length > 0) {
-                // load column headings
+                
                 var colHead = [];
                 Object.keys(jsonData[0]).forEach(function (key) {
                 colHead.push(key);
                 });
                 gglData.push(colHead);
 
-                // load data rows
+                
                 jsonData.forEach(function (row) {
                 var gglRow = [];
                 Object.keys(row).forEach(function (key) {
@@ -281,7 +282,7 @@ export default {
                 
             };
 
-            // arrayToDataTable is a static method, "new" keyword not needed
+            
             var data = google.visualization.arrayToDataTable(gglData);  
             chart.draw(data,options);
 
@@ -310,14 +311,14 @@ export default {
 
             var gglData = [];
             if (jsonData.length > 0) {
-                // load column headings
+                
                 var colHead = [];
                 Object.keys(jsonData[0]).forEach(function (key) {
                 colHead.push(key);
                 });
                 gglData.push(colHead);
 
-                // load data rows
+                
                 jsonData.forEach(function (row) {
                 var gglRow = [];
                 Object.keys(row).forEach(function (key) {
@@ -331,7 +332,7 @@ export default {
                 
             };
 
-            // arrayToDataTable is a static method, "new" keyword not needed
+           
             var data = google.visualization.arrayToDataTable(gglData);  
             chart.draw(data,options);
 
@@ -349,6 +350,106 @@ export default {
             
           
             },
+
+        async onChartReady3(chart, google) {
+            if(this.qtd_props > 2){
+                this.id = this.searchQuery
+            }
+            var response = await Paciente.pressys(this.id).then(resposta => {
+            this.pressys = resposta.data})  
+            var jsonData = this.pressys
+
+            var gglData = [];
+            if (jsonData.length > 0) {
+                
+                var colHead = [];
+                Object.keys(jsonData[0]).forEach(function (key) {
+                colHead.push(key);
+                });
+                gglData.push(colHead);
+
+                
+                jsonData.forEach(function (row) {
+                var gglRow = [];
+                Object.keys(row).forEach(function (key) {
+                    gglRow.push(row[key]);
+                });
+                gglData.push(gglRow);
+                });
+            }
+            var options = {
+                lineWidth: 1,   
+                
+            };
+
+            
+            var data = google.visualization.arrayToDataTable(gglData);  
+            chart.draw(data,options);
+
+            $(window).resize(function() {
+            if(this.resizeTO) clearTimeout(this.resizeTO);
+            this.resizeTO = setTimeout(function() {
+                $(this).trigger('resizeEnd');
+            }, 500);
+            });
+
+            $(window).on('resizeEnd', function() {
+                chart.draw(data,options);
+            });
+                        
+            
+          
+            },
+
+            async onChartReady4(chart, google) {
+            if(this.qtd_props > 2){
+                this.id = this.searchQuery
+            }
+            var response = await Paciente.pressmain(this.id).then(resposta => {
+            this.pressmain = resposta.data})  
+            var jsonData = this.pressmain
+
+            var gglData = [];
+            if (jsonData.length > 0) {
+                
+                var colHead = [];
+                Object.keys(jsonData[0]).forEach(function (key) {
+                colHead.push(key);
+                });
+                gglData.push(colHead);
+
+                
+                jsonData.forEach(function (row) {
+                var gglRow = [];
+                Object.keys(row).forEach(function (key) {
+                    gglRow.push(row[key]);
+                });
+                gglData.push(gglRow);
+                });
+            }
+            var options = {
+                lineWidth: 1,   
+                
+            };
+
+            
+            var data = google.visualization.arrayToDataTable(gglData);  
+            chart.draw(data,options);
+
+            $(window).resize(function() {
+            if(this.resizeTO) clearTimeout(this.resizeTO);
+            this.resizeTO = setTimeout(function() {
+                $(this).trigger('resizeEnd');
+            }, 500);
+            });
+
+            $(window).on('resizeEnd', function() {
+                chart.draw(data,options);
+            });
+                        
+            
+          
+            }
         
             
     },

@@ -16,5 +16,12 @@ export default	{
     
 	tempat:(patient)=>{
 		return http.get('Temp/'+ patient);
+	},
+
+	pressys:(patient)=>{
+		return http.get('PressSys/'+ patient);
+	},
+	pressmain:(patient)=>{
+		return http.get('PressMain/'+ patient);
 	}
 }
