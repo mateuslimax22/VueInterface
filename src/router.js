@@ -31,13 +31,14 @@ export default new Router({
           component: () => import(/* webpackChunkName: "demo" */ './views/Perfil.vue')
         },
         
-        {
-          path: '/tables',
-          name: 'tables',
-          component: () => import(/* webpackChunkName: "demo" */ './views/Dashboard/Grafico.vue')
-        }
+        
       ]
     },
+    {
+      path: '/Landing',
+      name: 'landing',
+      component: () => import(/* webpackChunkName: "demo" */ './views/Landing.vue')
+    }
 
   ]
 })

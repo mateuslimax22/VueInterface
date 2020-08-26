@@ -1,5 +1,5 @@
 import flask
-from flask import Flask, jsonify,request
+from flask import Flask, jsonify,request,render_template
 import psycopg2
 import json
 from flask_cors import CORS
@@ -362,7 +362,7 @@ def SelectPressSys(id):
     print("Não foi possivel acessar o banco de dados")
 
   cur = con.cursor()
-  sql= '''SELECT value2num FROM public.chartevents where itemid = '57' or itemid = '51' and subjectid = %s; '''
+  sql= '''SELECT value2num FROM public.chartevents where (itemid = '57' or itemid = '51') and subjectid = %s; '''
   cur.execute(sql,[id])
   row_headers=[x[0] for x in cur.description]
   rv = cur.fetchall()
@@ -393,7 +393,7 @@ def SelectPressMain(id):
     print("Não foi possivel acessar o banco de dados")
 
   cur = con.cursor()
-  sql= '''SELECT value1num FROM public.chartevents where itemid = '58' or itemid = '52' and subjectid = %s; '''
+  sql= '''SELECT value1num FROM public.chartevents where (itemid = '58' or itemid = '52') and subjectid = %s; '''
   cur.execute(sql,[id])
   row_headers=[x[0] for x in cur.description]
   rv = cur.fetchall()
@@ -416,11 +416,93 @@ def SelectPressMain(id):
 
   return op
 
+@app.route('/AddTemp', methods=['POST'])
+def AddTemp():
+  try:
+      con = psycopg2.connect("dbname='api' user='postgres' host='localhost' password='1502'")
+      print("conect")
+  except:
+      print("Não foi possivel acessar o banco de dados")
 
+  _json = request.json
+  _subjectid = _json['subjectid']
+  _itemid = _json['itemid']
+  _charttime = _json['charttime']
+  _hours = _json['hours']
+  _value1 = _json['value1']
+  _value1uom = _json['value1uom']
+  
+  # validate the received values
+  if _subjectid and _itemid and _charttime and _hours and _value1 and _value1uom and request.method == 'POST':
+    cur = con.cursor()
+    data = (_subjectid, _itemid, _charttime, _hours, _value1, _value1uom)
+    cur.execute("INSERT INTO public.chartevents(subjectid, itemid, charttime, hours, value1, value1uom )VALUES (%s, %s, %s, %s, %s, %s)",data)
+    con.commit()
+    resp = jsonify('Temperature added successfully!')
+    resp.status_code = 200
+    return resp
+  else:
+    return not_found()
+
+@app.route('/AddPressSys', methods=['POST'])
+def AddPressSys():
+  try:
+      con = psycopg2.connect("dbname='api' user='postgres' host='localhost' password='1502'")
+      print("conect")
+  except:
+      print("Não foi possivel acessar o banco de dados")
+
+  _json = request.json
+  _subjectid = _json['subjectid']
+  _itemid = _json['itemid']
+  _charttime = _json['charttime']
+  _hours = _json['hours']
+  _value2num = _json['value2num']
+  _value2uom = _json['value2uom']
+  
+  # validate the received values
+  if _subjectid and _itemid and _charttime and _hours and _value2num and _value2uom and request.method == 'POST':
+    cur = con.cursor()
+    data = (_subjectid, _itemid, _charttime, _hours, _value2num, _value2uom)
+    cur.execute("INSERT INTO public.chartevents(subjectid, itemid, charttime, hours, value2num, value2uom )VALUES (%s, %s, %s, %s, %s, %s)",data)
+    con.commit()
+    resp = jsonify('PressSys added successfully!')
+    resp.status_code = 200
+    return resp
+  else:
+    return not_found()
+
+@app.route('/AddPressMain', methods=['POST'])
+def AddPressMain():
+  try:
+      con = psycopg2.connect("dbname='api' user='postgres' host='localhost' password='1502'")
+      print("conect")
+  except:
+      print("Não foi possivel acessar o banco de dados")
+
+  _json = request.json
+  _subjectid = _json['subjectid']
+  _itemid = _json['itemid']
+  _charttime = _json['charttime']
+  _hours = _json['hours']
+  _value1num = _json['value1num']
+  _value1uom = _json['value1uom']
+  
+  # validate the received values
+  if _subjectid and _itemid and _charttime and _hours and _value1num and _value1uom and request.method == 'POST':
+    cur = con.cursor()
+    data = (_subjectid, _itemid, _charttime, _hours, _value1num, _value1uom)
+    cur.execute("INSERT INTO public.chartevents(subjectid, itemid, charttime, hours, value1num, value1uom )VALUES (%s, %s, %s, %s, %s, %s)",data)
+    con.commit()
+    resp = jsonify('PressMain added successfully!')
+    resp.status_code = 200
+    return resp
+  else:
+    return not_found()
 
 
 
 @app.route('/', methods=['GET'])
 def welcome():
   return render_template("index.html")
-app.run(host="localhost", debug=True)
+app.run(host='0.0.0.0', debug=True)

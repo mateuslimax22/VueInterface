@@ -17,7 +17,7 @@ import StatsCard from "../components/StatsCard";
 import Modal from "../components/Modal";
 import TabPane from "../components/Tabs/TabPane";
 import Tabs from "../components/Tabs/Tabs";
-import GraficoBP from 'C:/Users/mateu/Documents/ecg/src/views/Dashboard/Grafico.vue';
+import GraficoBP from '../views/Dashboard/Grafico.vue';
 
 export default {
   install(Vue) {
